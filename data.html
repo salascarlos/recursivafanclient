@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="style.css">
+
+<title>Recursiva Fan</title>
+
+</head>
+<body>
+  
+<h1>Recursiva Fan</h1>
+<p>Statistics</p>
+<div id="data" style="display: none;">
+  <table  class="table table-dark">
+      <th>Registers Fan</th>
+      <tr>
+          <td id="tdquantity"></td>
+      </tr>
+  </table>
+  <table  class="table table-dark">
+      <th>Average Racing Fan</th>
+      <tr>
+          <td id="tdaverage"></td>
+      </tr>
+  </table>
+  <table id="tablemostcommon" class="table table-dark">
+    <caption style="caption-side:top" >5 Most Common Names of River Fans</caption>
+  </table>
+  <table id="tablemarried" class="table table-dark">
+    <caption style="caption-side:top">100 Married Fan</caption>
+  </table>
+  <table id="tableteams" class="table table-dark">
+    <caption style="caption-side:top">Teams Statistics</caption>
+  </table>
+</div>
+
+<div hidden id="spinner"></div>
+
+<script>
+
+  spinner.removeAttribute('hidden');
+
+fetch('https://recursivafan.azurewebsites.net/api/socio/Quantity')
+  .then(response => response.text())
+  .then(text => {
+    document.getElementById('tdquantity').innerHTML  = text;
+  });
+
+fetch('https://recursivafan.azurewebsites.net/api/socio/Average/Racing')
+  .then(response => response.text())
+  .then(text => {
+    document.getElementById('tdaverage').innerHTML  = text;
+  });
+
+fetch('https://recursivafan.azurewebsites.net/api/socio/mostcommon/River/5')
+  .then(response => response.json())
+  .then(data => {
+      this.buildHtmlTable('#tablemostcommon', data);
+  });
+
+fetch('https://recursivafan.azurewebsites.net/api/socio/married/100')
+  .then(response => response.json())
+  .then(data => {
+      this.buildHtmlTable('#tablemarried', data);
+  });
+
+fetch('https://recursivafan.azurewebsites.net/api/socio/teams')
+  .then(response => response.json())
+  .then(data => {
+      this.buildHtmlTable('#tableteams', data);
+      document.getElementById('data').style.display = 'block';
+      spinner.setAttribute('hidden', '');
+  });
+
+// Builds the HTML Table out of myList.
+function buildHtmlTable(selector, myList) {
+  var columns = addAllColumnHeaders(myList, selector);
+
+  for (var i = 0; i < myList.length; i++) {
+    var row$ = $('<tr/>');
+    for (var colIndex = 0; colIndex < columns.length; colIndex++) {
+      var cellValue = myList[i][columns[colIndex]];
+      if (cellValue == null) cellValue = "";
+      row$.append($('<td/>').html(cellValue));
+    }
+    $(selector).append(row$);
+  }
+}
+
+// Adds a header row to the table and returns the set of columns.
+function addAllColumnHeaders(myList, selector) {
+  var columnSet = [];
+  var headerTr$ = $('<tr/>');
+
+  for (var i = 0; i < myList.length; i++) {
+    var rowHash = myList[i];
+    for (var key in rowHash) {
+      if ($.inArray(key, columnSet) == -1) {
+        columnSet.push(key);
+        headerTr$.append($('<th/>').html(key));
+      }
+    }
+  }
+  $(selector).append(headerTr$);
+
+  return columnSet;
+}
+
+
+
+
+</script>
+
+</body>
+
+</html>

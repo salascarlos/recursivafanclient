@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Recursiva Challenge</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="card" style="width: 20rem; height: 25rem; margin-top: 20rem; ">
+        <img class="card-img-top" src="imagen.jpg" alt="Card image cap">
+        <div class="card-body">
+            <form id="formfile" class="form-upload"  action="javascript:postData()">
+                <h5>Please select your csv file</h5>
+                <input id="filebutton" name="file" type="file" class="form-control-file" accept=".csv"  />
+            </br>
+                <button id="formbutton" class="btn btn-lg btn-block btn-primary" type="submit" disabled>Upload</button>
+            </form>
+            <div id="viewdatalnk" style="display: none;">
+                <a href="data.html">View Statistics Data.</a>
+            </div>
+        </div>
+      </div>
+
+      <div hidden id="spinner"></div>
+
+
+  <script>
+        function showViewDataLnk(response) {
+            if (response.status == 200)
+            {
+                document.getElementById('viewdatalnk').style.display = 'block';
+                document.getElementById('formbutton').disabled = true;
+                document.getElementById('filebutton').disabled = true;
+            }
+            else{
+                document.getElementById('viewdatalnk').style.display = 'none';
+                document.getElementById('formbutton').disabled = true;
+                document.getElementById('filebutton').disabled = true;
+            }
+            
+            console.log(response);
+        }
+
+      function postData() {
+        var formData = new FormData();
+        var fileField = document.querySelector("input[type='file']");
+
+        spinner.removeAttribute('hidden');
+
+        formData.append('file', fileField.files[0]);
+
+        fetch('https://recursivafan.azurewebsites.net/api/upload', {
+        method: 'POST',
+        body: formData
+        })
+        .catch(error => console.error('Error:', error))
+        .then((response) => {
+            this.showViewDataLnk(response);
+            spinner.setAttribute('hidden', '');
+        })
+    }
+
+    var fileUpload = document.getElementById("filebutton");
+    fileUpload.onchange = function() {
+        var input = this.files[0];
+
+        if (input) {
+            document.getElementById('formbutton').disabled = false;
+        }     
+    };
+    
+  </script>
+
+ 
+
+</body>
+</html>
